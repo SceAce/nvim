@@ -1,4 +1,23 @@
 -- AI 插件配置：avante.nvim + Claude
+
+-- 从同目录下的 ai_key.txt 读取 API key
+local function read_api_key()
+  local key_file = vim.fn.fnamemodify(debug.getinfo(1, "S").source:sub(2), ":h") .. "/ai_key.txt"
+  local f = io.open(key_file, "r")
+  if not f then
+    return nil
+  end
+  local key = f:read("*l")
+  f:close()
+  return key and key:match("^%s*(.-)%s*$") -- 去除首尾空白
+end
+
+-- 将 key 注入环境变量，避免 avante 弹出输入框
+local _key = read_api_key()
+if _key and _key ~= "" then
+  vim.env.ANTHROPIC_API_KEY = _key
+end
+
 return {
   -- 禁用 copilot（不需要）
   { "zbirenbaum/copilot.lua", enabled = false },
@@ -32,6 +51,10 @@ return {
           -- 本地代理地址
           -- 如使用官方 API，注释掉此行即可
           endpoint = "http://localhost:3010",
+
+          -- 从文件读取 API key
+          -- api_key = "sk-your-secret-token-1",
+          api_key = read_api_key(),
         },
       },
 
