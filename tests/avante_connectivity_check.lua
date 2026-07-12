@@ -17,6 +17,8 @@ local result = vim
     "30",
     "--proxy",
     "http://127.0.0.1:7897",
+    "--noproxy",
+    "",
     "--header",
     "@-",
     "https://www.aivalux.com/models",
