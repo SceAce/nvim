@@ -1,6 +1,11 @@
 local helpers = require("tests.helpers")
 local opts = helpers.plugin_opts("snacks.nvim")
-local explorer = opts.picker.sources.explorer
+local picker = opts.picker
+helpers.truthy(picker, "Snacks picker options are configured")
+local sources = picker.sources
+helpers.truthy(sources, "Snacks picker sources are configured")
+local explorer = sources.explorer
+helpers.truthy(explorer, "Snacks explorer source is configured")
 
 helpers.eq(explorer.hidden, true, "explorer shows hidden files")
 helpers.eq(explorer.ignored, true, "explorer shows ignored files")

@@ -10,7 +10,10 @@ function M.plugin_opts(name)
 end
 
 function M.eq(actual, expected, label)
-  assert(actual == expected, ("%s: expected %s, got %s"):format(label, vim.inspect(expected), vim.inspect(actual)))
+  assert(
+    vim.deep_equal(actual, expected),
+    ("%s: expected %s, got %s"):format(label, vim.inspect(expected), vim.inspect(actual))
+  )
 end
 
 function M.truthy(value, label)
@@ -18,13 +21,11 @@ function M.truthy(value, label)
 end
 
 function M.contains(values, expected, label)
-  for _, value in ipairs(values) do
-    if value == expected then
-      return
-    end
-  end
-
-  error(("%s: expected %s to contain %s"):format(label, vim.inspect(values), vim.inspect(expected)))
+  assert(type(values) == "table", ("%s: expected a table, got %s"):format(label, vim.inspect(values)))
+  assert(
+    vim.tbl_contains(values, expected),
+    ("%s: expected %s to contain %s"):format(label, vim.inspect(values), vim.inspect(expected))
+  )
 end
 
 return M
