@@ -41,16 +41,30 @@ require("render-markdown").render({
   win = vim.api.nvim_get_current_win(),
 })
 
+local block_virtual_text
 local rendered = vim.wait(2000, function()
   local marks = vim.api.nvim_buf_get_extmarks(buf, namespace, 0, -1, { details = true })
-  return vim.iter(marks):any(function(mark)
+  for _, mark in ipairs(marks) do
     local details = mark[4]
-    return details
-      and ((details.virt_text and #details.virt_text > 0) or (details.virt_lines and #details.virt_lines > 0))
-  end)
+    if details and details.virt_lines and #details.virt_lines > 0 then
+      local chunks = {}
+      for _, line in ipairs(details.virt_lines) do
+        for _, chunk in ipairs(line) do
+          chunks[#chunks + 1] = chunk[1]
+        end
+      end
+      local text = table.concat(chunks, "\n")
+      if text ~= "" and text:find("⌠", 1, true) then
+        block_virtual_text = text
+        return true
+      end
+    end
+  end
+  return false
 end, 20)
 
-helpers.truthy(rendered, "render-markdown creates virtual math output")
+helpers.truthy(rendered, "render-markdown creates virtual lines for block math")
+helpers.truthy(block_virtual_text:find("⌠", 1, true), "block math virtual lines contain a converted integral")
 vim.api.nvim_buf_delete(buf, { force = true })
 
 print("markdown_render_spec: ok")
