@@ -14,7 +14,7 @@
 
 - Create `lua/config/ai.lua`: resolve Codex home, decode `auth.json`, validate and cache the API key, and report secret-free failures once.
 - Create `tests/ai_config_spec.lua`: exercise credential success, cache behavior, environment isolation, and malformed or missing input using temporary files.
-- Modify `lua/plugins/avante.lua`: select and configure the custom `codex` provider and remove the Copilot dependency.
+- Modify `lua/plugins/avante.lua`: select and configure the custom `codex_http` provider and remove the Copilot dependency.
 - Modify `lua/plugins/copilot.lua`: replace active Copilot setup with an explicit disabled plugin override.
 - Create `tests/avante_provider_spec.lua`: verify Lazy's merged provider configuration, resolved Avante inheritance, secret callback, dependency removal, and disabled Copilot state.
 - Create `tests/avante_startup_spec.lua`: trigger `VeryLazy` with a fake credential and reject the original startup error signatures.
@@ -181,6 +181,10 @@ git commit -m "feat: load Avante credential from Codex auth"
 - Modify: `lua/plugins/avante.lua:1-22`
 - Modify: `lua/plugins/copilot.lua:1-11`
 
+Use `codex_http` as the custom provider's internal name. The installed Avante
+version reserves `codex` in `acp_providers`; selecting that name would dispatch
+through ACP and bypass the custom HTTP provider.
+
 - [ ] **Step 1: Write the failing provider integration test**
 
 Create `tests/avante_provider_spec.lua`:
@@ -197,17 +201,17 @@ vim.env.CODEX_HOME = root
 package.loaded["config.ai"] = nil
 
 local opts = h.plugin_opts("avante.nvim")
-h.eq(opts.provider, "codex", "Avante selects the Codex-compatible provider")
-local codex = opts.providers and opts.providers.codex
-h.truthy(codex, "Codex provider options exist")
-h.eq(codex.__inherited_from, "openai", "Codex provider inherits OpenAI")
-h.eq(codex.endpoint, "https://www.aivalux.com", "Codex provider endpoint")
-h.eq(codex.model, "gpt-5.6-sol", "Codex provider model")
-h.eq(codex.use_response_api, true, "Codex provider uses the Responses API")
-h.eq(codex.proxy, "http://127.0.0.1:7897", "Codex provider proxy")
-h.eq(codex.api_key_name, "OPENAI_API_KEY", "Codex provider declares authentication")
-h.truthy(type(codex.parse_api_key) == "function", "Codex provider has a key callback")
-h.truthy(codex.parse_api_key() == fake_key, "Codex provider reads the temporary credential")
+h.eq(opts.provider, "codex_http", "Avante selects the Codex-compatible HTTP provider")
+local codex_http = opts.providers and opts.providers.codex_http
+h.truthy(codex_http, "Codex HTTP provider options exist")
+h.eq(codex_http.__inherited_from, "openai", "Codex HTTP provider inherits OpenAI")
+h.eq(codex_http.endpoint, "https://www.aivalux.com", "Codex HTTP provider endpoint")
+h.eq(codex_http.model, "gpt-5.6-sol", "Codex HTTP provider model")
+h.eq(codex_http.use_response_api, true, "Codex HTTP provider uses the Responses API")
+h.eq(codex_http.proxy, "http://127.0.0.1:7897", "Codex HTTP provider proxy")
+h.eq(codex_http.api_key_name, "OPENAI_API_KEY", "Codex HTTP provider declares authentication")
+h.truthy(type(codex_http.parse_api_key) == "function", "Codex HTTP provider has a key callback")
+h.truthy(codex_http.parse_api_key() == fake_key, "Codex HTTP provider reads the temporary credential")
 
 local lazy_config = require("lazy.core.config")
 local avante_plugin = lazy_config.plugins["avante.nvim"]
@@ -218,7 +222,12 @@ h.eq(copilot_source.enabled, false, "local Copilot specification is disabled")
 h.eq(lazy_config.plugins["copilot.lua"], nil, "disabled Copilot is absent from Lazy's active plugins")
 
 require("lazy").load({ plugins = { "avante.nvim" } })
-local provider = require("avante.providers").codex
+local avante_config = require("avante.config")
+h.truthy(
+  avante_config.acp_providers[avante_config.provider] == nil,
+  "selected provider does not route through ACP"
+)
+local provider = require("avante.providers").codex_http
 h.eq(provider.__inherited_from, "openai", "resolved provider keeps OpenAI inheritance")
 h.eq(provider.endpoint, "https://www.aivalux.com", "resolved provider endpoint")
 h.eq(provider.model, "gpt-5.6-sol", "resolved provider model")
@@ -242,7 +251,7 @@ XDG_STATE_HOME=/tmp/nvim-test-state XDG_CACHE_HOME=/tmp/nvim-test-cache \
   nvim --headless -u ./init.lua -i NONE -l tests/avante_provider_spec.lua
 ```
 
-Expected: non-zero exit with `Avante selects the Codex-compatible provider: expected "codex", got "copilot"`.
+Expected: non-zero exit with `Avante selects the Codex-compatible HTTP provider: expected "codex_http", got "copilot"`.
 
 - [ ] **Step 3: Configure the Codex-compatible Avante provider**
 
@@ -254,9 +263,9 @@ return {
   event = "VeryLazy",
   version = false,
   opts = {
-    provider = "codex",
+    provider = "codex_http",
     providers = {
-      codex = {
+      codex_http = {
         __inherited_from = "openai",
         endpoint = "https://www.aivalux.com",
         model = "gpt-5.6-sol",
@@ -390,6 +399,7 @@ assert(key, "Codex credential is unavailable")
 
 local result = vim.system({
   "curl",
+  "--disable",
   "--silent",
   "--show-error",
   "--output",
@@ -402,6 +412,8 @@ local result = vim.system({
   "30",
   "--proxy",
   "http://127.0.0.1:7897",
+  "--noproxy",
+  "",
   "--header",
   "@-",
   "https://www.aivalux.com/models",
@@ -417,7 +429,7 @@ assert(status and status >= 200 and status < 300, ("model-list request returned 
 print(("avante_connectivity_check: ok (HTTP %d)"):format(status))
 ```
 
-The authorization header is supplied on curl's standard input with `--header @-`; it is absent from the process argument list. Curl discards the body and prints only the HTTP status.
+The authorization header is supplied on curl's standard input with `--header @-`; it is absent from the process argument list. Curl discards the body and prints only the HTTP status. `--disable` remains the first curl option, and `--noproxy ""` prevents `NO_PROXY` or `no_proxy` from bypassing the explicit proxy on port 7897.
 
 - [ ] **Step 4: Run the authenticated connectivity check through port 7897**
 

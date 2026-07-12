@@ -63,9 +63,11 @@ perform a fresh read.
 
 ### Avante Provider
 
-Update `lua/plugins/avante.lua` to select a custom provider named `codex`. The
-provider inherits Avante's `openai` implementation and overrides only the
-settings required by the approved backend:
+Update `lua/plugins/avante.lua` to select a custom provider named
+`codex_http`. The installed Avante version reserves `codex` in
+`acp_providers`; using that name would select ACP dispatch and bypass the
+custom HTTP provider. `codex_http` inherits Avante's `openai` implementation
+and overrides only the settings required by the approved backend:
 
 - endpoint: `https://www.aivalux.com`
 - model: `gpt-5.6-sol`
@@ -95,7 +97,8 @@ suggestions ensures its authentication and token-refresh code cannot run.
 ## Runtime Flow
 
 1. Lazy merges the local Avante provider and Copilot-disable specifications.
-2. Avante loads on `VeryLazy` and resolves the selected `codex` provider.
+2. Avante loads on `VeryLazy` and resolves the selected `codex_http` provider
+   through HTTP rather than ACP dispatch.
 3. `parse_api_key` asks `config.ai` for the cached credential or performs the
    first guarded read of Codex's `auth.json`.
 4. When the user sends an Avante request, the inherited OpenAI provider creates
@@ -137,7 +140,9 @@ fake key.
 Add `tests/avante_provider_spec.lua` to inspect Lazy's merged specifications.
 It verifies that:
 
-- `codex` is the selected provider and inherits from `openai`;
+- `codex_http` is the selected provider and inherits from `openai`;
+- `avante_config.acp_providers[avante_config.provider]` is `nil`, proving the
+  selected provider cannot route through ACP dispatch;
 - endpoint, model, Responses API, and proxy have the approved values;
 - the custom key parser is present without embedding a key in the options;
 - Avante no longer depends on `zbirenbaum/copilot.lua`;
@@ -157,7 +162,9 @@ Perform one authenticated, read-only model-list request to
 `https://www.aivalux.com/models` through `http://127.0.0.1:7897`. The check
 reads the real key dynamically and records only request success or failure; it
 does not print the authorization header, key, or response body. It does not
-send prompts or generate model output.
+send prompts or generate model output. Curl starts with `--disable` and uses
+`--noproxy ""` after the explicit proxy so `NO_PROXY` or `no_proxy` cannot
+bypass port 7897.
 
 Finally, run all existing and new headless Lua tests plus Stylua checks for the
 changed Lua files. No test or diagnostic command may alter the contents or
