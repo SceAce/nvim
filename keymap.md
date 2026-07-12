@@ -236,6 +236,12 @@
 | `<leader>:` | n | 命令历史 |
 | `<leader>,` | n | Buffer 列表 |
 
+### 搜索与替换
+
+| 快捷键 | 模式 | 说明 |
+|--------|------|------|
+| `<leader>sr` | n, x | 跨文件搜索与替换（grug-far.nvim） |
+
 ### bufferline.nvim
 
 | 快捷键 | 模式 | 说明 |
