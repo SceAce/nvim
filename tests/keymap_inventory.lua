@@ -1,4 +1,5 @@
 local original_notify = vim.notify
+local original_more = vim.o.more
 vim.notify = function() end
 vim.o.more = false
 
@@ -37,5 +38,6 @@ end
 table.sort(records)
 vim.api.nvim_buf_delete(markdown, { force = true })
 vim.notify = original_notify
+vim.o.more = original_more
 
 io.stdout:write(table.concat(records, "\n"), "\n")
