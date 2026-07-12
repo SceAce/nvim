@@ -3,9 +3,9 @@ return {
   event = "VeryLazy",
   version = false,
   opts = {
-    provider = "codex",
+    provider = "codex_http",
     providers = {
-      codex = {
+      codex_http = {
         __inherited_from = "openai",
         endpoint = "https://www.aivalux.com",
         model = "gpt-5.6-sol",
