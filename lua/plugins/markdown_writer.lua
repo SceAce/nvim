@@ -50,9 +50,7 @@ return {
   {
     "iamcco/markdown-preview.nvim",
     ft = { "markdown", "markdown.mdx" },
-    build = function()
-      vim.fn["mkdp#util#install"]()
-    end,
+    build = "cd app && npm_config_registry=https://registry.npmmirror.com npx --yes yarn install --frozen-lockfile --registry=https://registry.npmmirror.com",
     init = function()
       vim.g.mkdp_auto_start = 0
       vim.g.mkdp_auto_close = 1
