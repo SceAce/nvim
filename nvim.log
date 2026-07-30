@@ -1,0 +1,9 @@
+WRN 2026-07-30T21:44:21.232 ?.3        server_start:197: Failed to start server: operation not permitted: /run/user/1000/nvim.3.0
+WRN 2026-07-30T21:45:16.293 ?.2        server_start:197: Failed to start server: operation not permitted: /run/user/1000/nvim.2.0
+WRN 2026-07-30T21:45:16.294 ?.2        server_start:197: Failed to start server: operation not permitted: /run/user/1000/nvim.2.0
+WRN 2026-07-30T21:45:16.295 ?.3        server_start:197: Failed to start server: operation not permitted: /run/user/1000/nvim.3.0
+WRN 2026-07-30T21:45:16.301 ?.3        server_start:197: Failed to start server: operation not permitted: /run/user/1000/nvim.3.0
+WRN 2026-07-30T21:53:03.889 ui.2       tui_stop:658: TUI: timed out waiting for DA1 response
+WRN 2026-07-30T21:57:06.517 ?.5        server_start:197: Failed to start server: operation not permitted: /run/user/1000/nvim.5.0
+WRN 2026-07-30T22:16:41.924 ?.3        server_start:197: Failed to start server: operation not permitted: /run/user/1000/nvim.3.0
+WRN 2026-07-30T22:26:10.356 ?.5        server_start:197: Failed to start server: operation not permitted: /run/user/1000/nvim.5.0
