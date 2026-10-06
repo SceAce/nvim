@@ -14,6 +14,29 @@
 
 ---
 
+## AI（sidekick.nvim）
+
+| 快捷键 | 模式 | 说明 |
+|--------|------|------|
+| `<leader>ac` | n | Codex（GPT）新会话 |
+| `<leader>aC` | n | Codex（GPT）恢复会话（session picker） |
+| `<leader>aP` | n | Pi（DeepSeek）新会话 |
+| `<leader>aR` | n | Pi（DeepSeek）恢复会话（session picker） |
+| `<leader>aa` | n | 切换当前 CLI 窗口显隐 |
+| `<leader>as` | n | 选择/接入 CLI 工具 |
+| `<leader>ad` | n | 脱离当前 CLI 会话 |
+| `<leader>at` | n/x | 把当前光标处/选中内容发给 CLI |
+| `<leader>af` | n | 把当前文件发给 CLI |
+| `<leader>av` | x | 把选中内容发给 CLI |
+| `<leader>ap` | n/x | 选择预设 prompt |
+| `<c-.>` | n/t/i/x | 聚焦 CLI 窗口 |
+
+> sidekick 直接运行本机的 `codex` / `pi` CLI，会话就是 CLI 自己的历史：
+> `codex` → `~/.codex/sessions`；`pi` → `~/.pi/agent/sessions`。
+> “恢复会话”会进入 CLI 自带的 session picker，可继续之前的对话。
+
+---
+
 ## 运行
 
 | 快捷键 | 模式 | 说明 |
