@@ -1,8 +1,31 @@
+local explorer = require("custom.explorer")
+
 return {
   {
     "snacks.nvim",
+    keys = {
+      -- 一键显示 / 隐藏 dotfiles 与 git 忽略的文件
+      {
+        "<leader>eH",
+        function()
+          explorer.toggle()
+        end,
+        desc = "切换隐藏文件（dotfiles / gitignore）",
+      },
+    },
     opts = function(_, opts)
       opts.picker = {
+        actions = {
+          -- explorer 内一键切换显示（绑定到列表窗口的 H）
+          toggle_hidden_ignored = function(picker)
+            explorer.picker_toggle(picker)
+            vim.notify(
+              explorer.show_hidden and "显示 dotfiles / git 忽略的文件"
+                or "隐藏 dotfiles / git 忽略的文件",
+              vim.log.levels.INFO
+            )
+          end,
+        },
         sources = {
           explorer = {
             layout = {
@@ -10,6 +33,20 @@ return {
                 position = "left",
               },
             },
+            win = {
+              list = {
+                keys = {
+                  ["H"] = "toggle_hidden_ignored",
+                },
+              },
+            },
+            -- 打开时注入当前显示状态（默认隐藏 dotfiles / git 忽略文件）
+            config = function(o)
+              local state = explorer.opts()
+              o.hidden = state.hidden
+              o.ignored = state.ignored
+              return require("snacks.picker.source.explorer").setup(o)
+            end,
           },
         },
       }

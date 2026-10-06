@@ -248,5 +248,9 @@
 | `<leader>E` | n | 文件浏览器（cwd） |
 | `<leader>fe` | n | 文件浏览器（根目录） |
 | `<leader>fE` | n | 文件浏览器（cwd） |
+| `<leader>eH` | n | 一键显示 / 隐藏 dotfiles 与 git 忽略的文件 |
 | `<leader>ge` | n | Git 状态 |
 | `<leader>be` | n | Buffer 列表 |
+
+> 文件浏览器默认隐藏 `.` 开头的文件与 `.gitignore` 忽略的文件；
+> 按 `<leader>eH`（或在浏览器内按 `H`）可一键切换显示 / 隐藏。
