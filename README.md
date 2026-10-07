@@ -25,6 +25,7 @@
 - `codex` CLI、`pi` CLI：AI 助手（见下方「AI」）
 - `clangd` / `clang-format` / `clang-tidy`：C/C++
 - `cppman`、`man`：C/C++ 手册查询
+- `translate-shell`（`trans`）：翻译引擎
 - `stylua`：Lua 格式化
 - `tmux` / `zellij`：AI CLI 会话持久化（可选）
 
@@ -122,7 +123,11 @@
 
 ### 翻译
 
-- **translate.nvim**：`<leader>tz` 中、`<leader>te` 英、`<leader>tw` 单词（默认 Google，可换 DeepL）。
+- **translate.nvim**：`<leader>tz` 中、`<leader>te` 英、`<leader>tw` 单词。
+- 引擎为 **translate-shell**（`trans`），并**显式走代理**（`-x host:port`），避免直连 Google 被墙：
+  - 代理探测优先级：`TRANSLATE_PROXY` > `https_proxy` > `http_proxy` > `all_proxy` > 默认 `127.0.0.1:7897`
+  - 想直连或换引擎，改 `lua/plugins/translate.lua`（设 `TRANSLATE_PROXY=none` 可禁用代理）
+  - 依赖：`brew install translate-shell`
 
 ### AI（sidekick.nvim）
 
