@@ -1,5 +1,4 @@
 -- C/C++ 增强（clangd 参数 + 查询键位）
--- 由审查报告 ~/Tmp/nvim-cpp-review.md 得出；键位全部实测空闲。
 
 local man_functions = require("custom.man_functions")
 man_functions.setup() -- 后台预热手册索引
