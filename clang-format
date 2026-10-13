@@ -1,0 +1,8 @@
+# 全局 clang-format 配置（clangd / clang-format 从文件所在目录向上查找）
+# LLVM 默认缩进是 2 空格，这里统一改成 4 空格。
+---
+BasedOnStyle: LLVM
+IndentWidth: 4
+TabWidth: 4
+UseTab: Never
+ColumnLimit: 120

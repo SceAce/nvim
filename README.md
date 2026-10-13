@@ -38,18 +38,21 @@
 ├── init.lua                    # 入口
 ├── lazyvim.json                # 启用的 LazyVim extras
 ├── lazy-lock.json              # 插件版本锁定
-├── stylua.toml                 # Lua 格式化配置
+├── stylua.toml                 # Lua 格式化配置（4 空格）
+├── clang-format                # C/C++ 格式化（软链到 ~/.clang-format，4 空格）
+├── .editorconfig               # 编辑器缩进约定
 ├── keymap.md                   # 快捷键大全
 └── lua/
     ├── config/
     │   ├── lazy.lua            # lazy.nvim 引导
     │   ├── options.lua         # vim 选项（缩进 4、winbar 等）
-    │   ├── autocmds.lua        # 自动命令（Markdown 写作等）
+    │   ├── autocmds.lua        # 自动命令（缩进强制、Markdown 写作等）
     │   └── keymaps.lua         # 原生键位
     ├── plugins/                # 插件配置（按功能分文件）
     │   ├── ui.lua              # Snacks explorer + lualine + explorer 隐藏切换
     │   ├── editor.lua          # toggleterm、navic
     │   ├── coding.lua          # 补全/LSP 开关、目录格式化
+    │   ├── formatting.lua      # conform/stylua 强制 4 空格缩进
     │   ├── blink.lua           # blink.cmp（VSCode 风格补全）
     │   ├── c-cpp.lua           # clangd 参数、clangd 查询、cppman、man 搜索
     │   ├── runner.lua          # 多语言运行器 + Overseer
