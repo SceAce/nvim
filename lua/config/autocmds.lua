@@ -1,25 +1,20 @@
 -- Enforce 4-space indentation for every buffer, overriding LazyVim
--- lang.* extras (which set 2 for e.g. lua/json/yaml/ts/rust).
-vim.api.nvim_create_autocmd("FileType", {
+-- lang.* extras (which set 2 for e.g. lua/json/yaml/ts/rust) and the builtin
+-- editorconfig support (project `.editorconfig` may set indent_size = 2).
+local function force_indent_4()
+  local ft = vim.bo.filetype
+  -- markdown conventionally uses 2 spaces
+  local width = (ft == "markdown" or ft == "markdown.mdx") and 2 or 4
+  vim.opt_local.expandtab = true
+  vim.opt_local.shiftwidth = width
+  vim.opt_local.tabstop = width
+  vim.opt_local.softtabstop = width
+end
+
+vim.api.nvim_create_autocmd({ "FileType", "BufReadPost", "BufEnter" }, {
   group = vim.api.nvim_create_augroup("user_indent_4", { clear = true }),
   pattern = "*",
-  callback = function()
-    vim.opt_local.expandtab = true
-    vim.opt_local.shiftwidth = 4
-    vim.opt_local.tabstop = 4
-    vim.opt_local.softtabstop = 4
-  end,
-})
-
--- Markdown is conventionally 2-space; keep it readable at 2.
-vim.api.nvim_create_autocmd("FileType", {
-  group = vim.api.nvim_create_augroup("user_indent_markdown", { clear = true }),
-  pattern = { "markdown", "markdown.mdx" },
-  callback = function()
-    vim.opt_local.shiftwidth = 2
-    vim.opt_local.tabstop = 2
-    vim.opt_local.softtabstop = 2
-  end,
+  callback = force_indent_4,
 })
 
 -- delete trailing space
