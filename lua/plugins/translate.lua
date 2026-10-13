@@ -47,6 +47,36 @@ return {
           },
         },
       })
+
+      -- Bug fix: the floating output window crashes with
+      --   Invalid 'width': expected positive Integer
+      -- when the translation result is empty or contains an empty first line
+      -- (nvim_open_win rejects width/height <= 0). Wrap the preset's cmd to
+      -- always emit at least one non-empty line and clamp with a min width.
+      local floating = require("translate.preset.output.floating")
+      local orig_cmd = floating.cmd
+      floating.cmd = function(lines, pos)
+        if type(lines) == "string" then
+          lines = { lines }
+        end
+        if not lines or #lines == 0 then
+          lines = { "" }
+        end
+        -- wipe emoji/wide issues are handled by nvim_strwidth; just ensure
+        -- the first line isn't empty so the computed width is > 0.
+        local has_text = false
+        for _, l in ipairs(lines) do
+          if l ~= nil and l ~= "" then
+            has_text = true
+            break
+          end
+        end
+        if not has_text then
+          lines = { "(empty translation)" }
+        end
+        return orig_cmd(lines, pos)
+      end
+
       -- 想换 DeepL 等付费引擎时，在这里设置 key 并切换 default.command，例如：
       -- vim.g.deepl_api_auth_key = vim.env.DEEPL_API_KEY
       -- require("translate").setup({ default = { command = "deepl_free" } })
