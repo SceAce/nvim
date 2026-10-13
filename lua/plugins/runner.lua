@@ -64,7 +64,7 @@ local function run_in_term(cmd)
     return
   end
   local term = tm.Terminal:new({
-    cmd = "bash -c '" .. cmd .. "; echo; read -p \"按任意键退出...\" -n1; exit'",
+    cmd = "bash -c '" .. cmd .. '; echo; read -p "按任意键退出..." -n1; exit\'',
     direction = "horizontal",
     size = 15,
     close_on_exit = true,
@@ -83,7 +83,7 @@ local function run_file()
     return
   end
 
-  local dir  = vim.fn.expand("%:p:h")
+  local dir = vim.fn.expand("%:p:h")
   local name = vim.fn.expand("%:t")
   local stem = vim.fn.expand("%:t:r")
   local info = cfg.compile(dir, name, stem)
@@ -143,8 +143,8 @@ return {
       templates = { "builtin", "tomcat" },
     },
     keys = {
-      { "<leader>ro", "<cmd>OverseerRun<CR>",         desc = "运行项目任务" },
-      { "<leader>rt", "<cmd>OverseerToggle<CR>",      desc = "任务列表" },
+      { "<leader>ro", "<cmd>OverseerRun<CR>", desc = "运行项目任务" },
+      { "<leader>rt", "<cmd>OverseerToggle<CR>", desc = "任务列表" },
       { "<leader>rl", "<cmd>OverseerRestartLast<CR>", desc = "重跑上次任务" },
     },
   },
